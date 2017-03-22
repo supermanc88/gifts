@@ -51,10 +51,10 @@ function getY(t) {//由弧度得到 Y 坐标
 
 //玫瑰花线数学公式
 //x=a* sin(nθ)* cos(θ), y=a*sin(nθ)* sin(θ)
-
-var a = 0.5;
-var n = 0.2; 
-var angle = 0;
+var beishu = 50;
+var a = Math.PI;
+var n = Math.E; 
+var angle = -2*Math.PI;
 var angleDecrement = 0; //角度增量
 var zhouqi = Math.PI*2;
 
@@ -91,7 +91,7 @@ function printRose(){
 }
 
 function getRosePoint(t){
-	var x = WINDOW_WIDTH / 2 + 10 * a * Math.sin(n * t) * Math.cos(t);
-	var y = WINDOW_HEIGHT / 2 + 10 * a * Math.sin(n * t) * Math.sin(t);
+	var x = WINDOW_WIDTH / 2 + beishu * a * Math.sin(n * t) * Math.cos(t);
+	var y = WINDOW_HEIGHT / 2 + beishu * a * Math.sin(n * t) * Math.sin(t);
 	return new Array(x, y); 
 }

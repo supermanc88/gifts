@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>A gift for U</title>
+
+<script type="text/javascript" src="js/jquery-3.2.0.min.js"></script>
+<!-- <script type="text/javascript" src="js/garden.js"></script>
+<script type="text/javascript" src="js/function.js"></script> -->
+
+</head>
+<body>
+
+<div id="therose">
+	<canvas id="rose"></canvas>
+</div>
+
+<script type="text/javascript">
+
+	var canvas = document.getElementById("rose");
+	var ctx = canvas.getContext("2d");
+
+	function surface(a, b) { // I'm using a and b as parameters ranging from 0 to 1.
+
+		return {
+
+			x: a*50,
+
+			y: b*50
+
+		};
+
+	// this surface will be a square of 50x50 units of size
+
+	}
+
+ 	var canvas = document.getElementById("rose");
+ 	var ctx = canvas.getContext("2d");
+    var a, b, position;
+
+// Now I'm going to sample the surface at .1 intervals for a and b parameters:
+
+	for (a = 0; a < 1; a += .1) {
+	    for (b = 0; b < 1; b += .1) {
+	        position = surface(a, b);
+	        ctx.fillRect(position.x, position.y, 1, 1);
+	    }
+}
+	
+</script>
+
+</body>
+</html>
