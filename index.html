@@ -17,8 +17,18 @@
 
 <script type="text/javascript">
 
-	var canvas = $('heart');
-	var ctx = canvas.getContext('2d');
+	var canvas = document.getElementById("heart");
+	var ctx = canvas.getContext("2d");
+
+    //让画布撑满整个屏幕，-20是滚动条的位置，需留出。如滚动条出现则会挤压画布。  
+    WINDOW_HEIGHT=document.documentElement.clientHeight-20;  
+    WINDOW_WIDTH=document.documentElement.clientWidth-20;  
+    canvas.width = WINDOW_WIDTH;  
+    canvas.height = WINDOW_HEIGHT;  
+
+	$(function(){
+		drawHeart();
+	});
 	
 </script>
 
