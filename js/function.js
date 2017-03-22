@@ -51,12 +51,13 @@ function getY(t) {//由弧度得到 Y 坐标
 
 //玫瑰花线数学公式
 //x=a* sin(nθ)* cos(θ), y=a*sin(nθ)* sin(θ)
-var beishu = 50;
+var beishu = 110;
 var a = Math.PI;
 var n = Math.E; 
-var angle = -2*Math.PI;
+var angle = -14*Math.PI;
 var angleDecrement = 0; //角度增量
-var zhouqi = Math.PI*2;
+var zhouqi = Math.PI*14;
+var pinlv = 3600;
 
 var roseIntervalId = 0;
 var dd = 0;
@@ -65,7 +66,7 @@ function drawRose(){
 	ctx.strokeStyle = "red";   //设置笔触的颜色
 	ctx.lineWidth = 1;	//设置线的宽度
 
-	angleDecrement = zhouqi / 360;
+	angleDecrement = zhouqi / pinlv;
 
 	var point = getRosePoint(angle);
 
@@ -80,12 +81,14 @@ function printRose(){
 
 	var point = getRosePoint(angle);
 	ctx.lineTo(point[0], point[1]);
+	garden.createRandomBloom(point[0], point[1]);
 	ctx.stroke();
 
 	dd ++;
 
-	if(dd > 360){
+	if(dd > pinlv){
 		clearInterval(roseIntervalId);
+		garden.clear();
 	}
 
 }
