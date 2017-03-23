@@ -12,13 +12,13 @@ randian = Math.PI;
 
 intervalTime = 10;
 function drawHeart(){
-	ctx.strokeStyle = "red";   //设置笔触的颜色
-	ctx.lineWidth = 1;	//设置线的宽度
+	ctx1.strokeStyle = "red";   //设置笔触的颜色
+	ctx1.lineWidth = 1;	//设置线的宽度
 
 	//randian = 0; //初始弧度为0  取值范围为[0,2π];
 	randianDecrement = Math.PI / 180 * 2;
 
-	ctx.moveTo(getX(randian), getY(randian)); //移动画笔到初始位置
+	ctx1.moveTo(getX(randian), getY(randian)); //移动画笔到初始位置
 	// alert(getX(randian));
 
 	intervalId = setInterval("printHeart()", intervalTime);
@@ -27,15 +27,19 @@ function drawHeart(){
 
 function printHeart(){
 	randian += randianDecrement;
-	ctx.lineTo(getX(randian), getY(randian));
+	ctx1.lineTo(getX(randian), getY(randian));
 
-	garden.createRandomBloom(getX(randian), getY(randian));
+	garden1.createRandomBloom(getX(randian), getY(randian));
 
 	i++
-	ctx.stroke();//划线
+	ctx1.stroke();//划线
 
 	if(i > 180){
 		clearInterval(intervalId);
+
+		setInterval(function () {
+    		garden1.render();
+		}, Garden.options.growSpeed);
 	}
 }
 
@@ -54,13 +58,17 @@ function getY(t) {//由弧度得到 Y 坐标
 var beishu = 110;
 var a = Math.PI;
 var n = Math.E; 
-var angle = -14*Math.PI;
+var angle = -7*Math.PI;
 var angleDecrement = 0; //角度增量
-var zhouqi = Math.PI*14;
-var pinlv = 3600;
+var zhouqi = Math.PI*7;
+var pinlv = 900;
 
 var roseIntervalId = 0;
 var dd = 0;
+
+var isOK = 0;
+
+var bllomArray = new Array();
 
 function drawRose(){
 	ctx.strokeStyle = "red";   //设置笔触的颜色
@@ -79,8 +87,10 @@ function printRose(){
 
 	angle += angleDecrement;
 
-	var point = getRosePoint(angle);
+	var point = getRosePoint(angle);				//最下层图层画线
 	ctx.lineTo(point[0], point[1]);
+
+	bllomArray.push(point);							//存放所有的花朵位置
 	garden.createRandomBloom(point[0], point[1]);
 	ctx.stroke();
 
@@ -88,7 +98,9 @@ function printRose(){
 
 	if(dd > pinlv){
 		clearInterval(roseIntervalId);
-		garden.clear();
+		// garden.clear();
+		// garden.fly();
+		isOK = 1;
 	}
 
 }

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>A gift for U</title>
 
-<script type="text/javascript" src="js/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript" src="js/garden.js"></script>
 <script type="text/javascript" src="js/function.js"></script>
 
@@ -12,34 +12,84 @@
 <body>
 
 <div id="fallheart">
-	<canvas id="heart"></canvas>
+	<canvas id="heart" style="position:absolute; left:0; top:0; z-index:0"></canvas>
 </div>
 
 <script type="text/javascript">
 
-	var canvas = document.getElementById("heart");
-	var ctx = canvas.getContext("2d");
-
-	ctx.globalCompositeOperation = "lighter";
 
     //让画布撑满整个屏幕，-20是滚动条的位置，需留出。如滚动条出现则会挤压画布。  
-    WINDOW_HEIGHT=document.documentElement.clientHeight-20;  
-    WINDOW_WIDTH=document.documentElement.clientWidth-20;  
+    var WINDOW_HEIGHT=document.documentElement.clientHeight-20;  
+    var WINDOW_WIDTH=document.documentElement.clientWidth-20;  
+    var canvas = document.getElementById("heart");
+	var ctx = canvas.getContext("2d");
+
+	var canvasArray = new Array();
+
     canvas.width = WINDOW_WIDTH;  
-    canvas.height = WINDOW_HEIGHT;  
+	canvas.height = WINDOW_HEIGHT; 
 
-    garden = new Garden(ctx, canvas);
+	ctx.globalCompositeOperation = "lighter";
+	var garden = new Garden(ctx, canvas);
+    drawRose();
+	setInterval(function () {
+		garden.render();
+	}, Garden.options.growSpeed);
 
-    setInterval(function () {
-        garden.render();
-    }, Garden.options.growSpeed);
+	var fatherNode = $("#fallheart");
+	for(var iii = 0; iii < 1; iii++){
+		var m_canvas = document.createElement("canvas");
+		m_canvas.className = "canvas";
+		m_canvas.setAttribute("style", "position:absolute; left:0; top:0; z-index:"+i+1+";");
+		var m_ctx = m_canvas.getContext("2d");
+		m_ctx.globalCompositeOperation = "lighter";
 
-	$(function(){
-		// drawHeart();
-		drawRose();
-		// garden.createRandomBloom(200, 200);
-	});
-	
+	    m_canvas.width = WINDOW_WIDTH;  
+    	m_canvas.height = WINDOW_HEIGHT; 
+
+		//将创建的图层附加到父节点上去
+		fatherNode.append(m_canvas);
+		canvasArray.push(new Array(m_ctx, m_canvas));
+	}
+
+	var ctx1 = canvasArray[0][0];
+	var canvas1 = canvasArray[0][1];
+	var garden1 = new Garden(ctx1, canvas1, 8, 20);
+	// garden1.options.bloomRadius.max = 35;
+	setTimeout("drawHeart()",25000)	
+
+
+	// var stopval;
+	// function isAllReady(){
+	// 	if(isOK == 1){			
+	// 		clearInterval(stopval);
+	// 		// for(var iii = 0; iii < bllomArray.length - 1; iii++){
+	// 		// 	var s_canvas = canvasArray[iii];
+	// 		// 	var m_garden = new Garden(s_canvas[0], s_canvas[1]);
+	// 		// 	var m_point = bllomArray[iii];
+	// 		// 	m_garden.createRandomBloom(m_point[0], m_point[1]);
+	// 		//     var aaaa = setInterval(function () {
+	//   //       		m_garden.render();
+	//   //  			}, Garden.options.growSpeed);
+	// 		// }
+
+	// 		m_garden = new Garden(ctx, canvas);
+	// 		for(var iii = 0; iii < bllomArray.length - 1; iii++){
+	// 			var m_point = bllomArray[iii];
+	// 			m_garden.createRandomBloom(m_point[0], m_point[1]);
+	// 			var aaaa = setInterval(function () {
+	//         		m_garden.render();
+	//    			}, Garden.options.growSpeed);
+	// 		}
+		
+	// 	setTimeout(drawHeart(), 35000);	
+
+	// 	}
+	// }
+	// stopval = setInterval("isAllReady()", 5);
+
+
+
 </script>
 
 </body>

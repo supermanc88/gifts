@@ -60,13 +60,36 @@
 	            ctx.bezierCurveTo(v3.x, v3.y, v4.x, v4.y, v2.x, v2.y);
 	            ctx.stroke();
 	        },
-	        render: function () {
-	            if (this.r <= this.bloom.r) {
-	                this.r += this.growFactor; // / 10;
-	                this.draw();
-	            } else {
-	                this.isfinished = true;
-	            }
+	        render: function (t) {
+	        	if (t == "draw") {
+		            if (this.r <= this.bloom.r) {
+		                this.r += this.growFactor; // / 10;
+		                this.draw();
+		            } else {
+		                this.isfinished = true;
+		            }
+	        	} else {
+		            // if (this.r > this.bloom.r) {
+		            //     this.r -= this.growFactor; // / 10;
+		                this.destroy();
+		            // } else {
+		            //     this.isfinished = true;
+		            // }
+	        	}
+
+	        },
+	        destroy: function () {
+	            var ctx = this.bloom.garden.ctx;
+	            var v1, v2, v3, v4;
+	            v1 = new Vector(0, this.r).rotate(Garden.degrad(this.startAngle));
+	            v2 = v1.clone().rotate(Garden.degrad(this.angle));
+	            v3 = v1.clone().mult(this.stretchA); //.rotate(this.tanAngleA);
+	            v4 = v2.clone().mult(this.stretchB); //.rotate(this.tanAngleB);
+	            ctx.strokeStyle = "#ffffff";  //设置为白色
+	            ctx.beginPath();
+	            ctx.moveTo(v1.x, v1.y);
+	            ctx.bezierCurveTo(v3.x, v3.y, v4.x, v4.y, v2.x, v2.y);
+	            ctx.stroke();
 	        }
 	    }
 
@@ -78,7 +101,7 @@
 	        this.petals = [];
 	        this.garden = garden;
 	        this.init();
-	        this.garden.addBloom(this);
+	        this.garden.addBloom(this);				//每次创建都会在garden的blooms数组中添加上自己
 	    }
 	    Bloom.prototype = {
 	        draw: function () {
@@ -87,12 +110,12 @@
 	            this.garden.ctx.translate(this.p.x, this.p.y);
 	            for (var i = 0; i < this.petals.length; i++) {
 	                p = this.petals[i];
-	                p.render();
+	                p.render("draw");
 	                isfinished *= p.isfinished;
 	            }
 	            this.garden.ctx.restore();
 	            if (isfinished == true) {
-	                this.garden.removeBloom(this);
+	                // this.garden.removeBloom(this);
 	            }
 	        },
 	        init: function () {
@@ -101,13 +124,38 @@
 	            for (var i = 0; i < this.pc; i++) {
 	                this.petals.push(new Petal(Garden.random(Garden.options.petalStretch.min, Garden.options.petalStretch.max), Garden.random(Garden.options.petalStretch.min, Garden.options.petalStretch.max), startAngle + i * angle, angle, Garden.random(Garden.options.growFactor.min, Garden.options.growFactor.max), this));
 	            }
+	        },
+	        fly: function () {
+	            var p, isfinished = true;
+	            this.garden.ctx.save();
+	            this.garden.ctx.translate(this.p.x, this.p.y);
+	            for (var i = 0; i < this.petals.length; i++) {
+	                p = this.petals[i];
+	                p.render("destroy");
+	                isfinished *= p.isfinished;
+	            }
+	            this.garden.ctx.restore();
+	            if (isfinished == true) {
+	                // this.garden.removeBloom(this);
+	            }
+	        	this.garden.removeBloom(this);
 	        }
 	    }
 
-	    function Garden(ctx, element) {
+	    function Garden(ctx, element, bloomRadius_min=0, bloomRadius_max=0) {
 	        this.blooms = [];
 	        this.element = element;
 	        this.ctx = ctx;
+	        if(bloomRadius_min == 0){
+	        	this.bloomRadius_min = Garden.options.bloomRadius.min;
+	        }else{
+	        	this.bloomRadius_min = bloomRadius_min;
+	        }
+	        if(bloomRadius_max == 0){
+	        	this.bloomRadius_max = Garden.options.bloomRadius.max;
+	        }else{
+	        	this.bloomRadius_max = bloomRadius_max;
+	        }
 	    }
 	    Garden.prototype = {
 	        render: function () {
@@ -129,7 +177,7 @@
 	            }
 	        },
 	        createRandomBloom: function (x, y) {
-	            this.createBloom(x, y, Garden.randomInt(Garden.options.bloomRadius.min, Garden.options.bloomRadius.max), Garden.randomrgba(Garden.options.color.rmin, Garden.options.color.rmax, Garden.options.color.gmin, Garden.options.color.gmax, Garden.options.color.bmin, Garden.options.color.bmax, Garden.options.color.opacity), Garden.randomInt(Garden.options.petalCount.min, Garden.options.petalCount.max));
+	            this.createBloom(x, y, Garden.randomInt(this.bloomRadius_min, this.bloomRadius_max), Garden.randomrgba(Garden.options.color.rmin, Garden.options.color.rmax, Garden.options.color.gmin, Garden.options.color.gmax, Garden.options.color.bmin, Garden.options.color.bmax, Garden.options.color.opacity), Garden.randomInt(Garden.options.petalCount.min, Garden.options.petalCount.max));
 	        },
 	        createBloom: function (x, y, r, c, pc) {
 	            new Bloom(new Vector(x, y), r, c, pc, this);
@@ -137,6 +185,13 @@
 	        clear: function () {
 	            this.blooms = [];
 	            this.ctx.clearRect(0, 0, this.element.width, this.element.height);
+	        },
+	        fly: function () {
+	        	var bloom;
+	        	for (var i = this.blooms.length; i >= 0 ; i--) {
+	        		bloom = this.blooms[i];
+	        		bloom.fly();
+	        	}
 	        }
 	    }
 
@@ -153,12 +208,12 @@
 	            min: 0.1,
 	            max: 1
 	        },
-	        bloomRadius: {
-	            min: 8,
-	            max: 10
+	        bloomRadius: {					//花朵半径随机
+	            min: 25,
+	            max: 150
 	        },
 	        density: 10,
-	        growSpeed: 1000 / 60,
+	        growSpeed: 1000 / 500,			//花朵生长速度
 	        color: {
 				rmin: 128,
 				rmax: 255,
